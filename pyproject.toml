@@ -8,4 +8,5 @@ dependencies = [
     "discord-py>=2.7.1",
     "pydantic-settings>=2.15.0",
     "python-dateutil>=2.9.0.post0",
+    "tzdata>=2026.4",
 ]
