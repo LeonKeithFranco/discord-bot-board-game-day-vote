@@ -18,16 +18,19 @@ class DateCalculator:
 
     def __init__(self) -> None:
         self._next_saturdays = self._generate_saturdays()
-        self.target_saturday = self.select_next_target_saturday()
+        self.select_next_target_saturday()
 
     def _generate_saturdays(self) -> list[datetime]:
         return list(rrule(MONTHLY, byweekday=SA(1), dtstart=today(), count=12))
 
-    def select_next_target_saturday(self) -> date:
+    def _get_next_target_saturday(self) -> date:
         if not self._next_saturdays:
             self._next_saturdays = self._generate_saturdays()
 
         return self._next_saturdays.pop(0).date()
+
+    def select_next_target_saturday(self) -> None:
+        self.target_saturday = self._get_next_target_saturday()
 
 
 if __name__ == "__main__":
