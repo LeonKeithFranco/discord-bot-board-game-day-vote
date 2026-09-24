@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 
@@ -19,4 +21,9 @@ async def ping(ctx: commands.Context) -> None:
     await ctx.send("pong")
 
 
-bot.run(settings.TOKEN)
+async def main():
+    async with bot:
+        await bot.start(settings.TOKEN)
+
+
+asyncio.run(main())
