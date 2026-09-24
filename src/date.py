@@ -2,9 +2,10 @@ from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
 from dateutil.rrule import MONTHLY, SA, rrule
-from dateutil.utils import today
 
-RUN_TIME = time(hour=12, minute=0, tzinfo=ZoneInfo("America/Vancouver"))
+TIMEZONE = ZoneInfo("America/Vancouver")
+RUN_TIME = time(hour=12, minute=0, tzinfo=TIMEZONE)
+_TODAY = datetime.now(tz=TIMEZONE)
 
 
 class DateCalculator:
@@ -21,7 +22,7 @@ class DateCalculator:
         self.select_next_target_saturday()
 
     def _generate_saturdays(self) -> list[datetime]:
-        return list(rrule(MONTHLY, byweekday=SA(1), dtstart=today(), count=12))
+        return list(rrule(MONTHLY, byweekday=SA(1), dtstart=_TODAY, count=12))
 
     def _get_next_target_saturday(self) -> date:
         if not self._next_saturdays:
