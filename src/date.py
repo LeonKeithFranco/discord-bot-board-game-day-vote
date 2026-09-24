@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
 from dateutil.rrule import MONTHLY, SA, rrule
@@ -14,7 +14,7 @@ class DateCalculator:
     """
 
     _next_saturdays: list[datetime]
-    target_saturday: datetime
+    target_saturday: date
 
     def __init__(self) -> None:
         self._next_saturdays = self._generate_saturdays()
@@ -23,11 +23,11 @@ class DateCalculator:
     def _generate_saturdays(self) -> list[datetime]:
         return list(rrule(MONTHLY, byweekday=SA(1), dtstart=today(), count=12))
 
-    def select_next_target_saturday(self) -> datetime:
+    def select_next_target_saturday(self) -> date:
         if not self._next_saturdays:
             self._next_saturdays = self._generate_saturdays()
 
-        return self._next_saturdays.pop(0)
+        return self._next_saturdays.pop(0).date()
 
 
 if __name__ == "__main__":
