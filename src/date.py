@@ -1,7 +1,8 @@
 from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
-from dateutil.rrule import MONTHLY, SA, rrule
+from dateutil.relativedelta import relativedelta
+from dateutil.rrule import MONTHLY, SA, WEEKLY, rrule
 
 TIMEZONE = ZoneInfo("America/Vancouver")
 RUN_TIME = time(hour=12, minute=0, tzinfo=TIMEZONE)
@@ -34,7 +35,18 @@ class DateCalculator:
         self.target_saturday = self._get_next_target_saturday()
 
 
+def get_all_saturdays_in_month(d: date) -> list[date]:
+    first_day = d.replace(day=1)
+    last_day = d + relativedelta(day=31)
+
+    return [
+        dt.date()
+        for dt in rrule(WEEKLY, byweekday=SA, dtstart=first_day, until=last_day)
+    ]
+
+
 if __name__ == "__main__":
     date_calc = DateCalculator()
     print(date_calc._next_saturdays)
     print(date_calc.target_saturday)
+    print(get_all_saturdays_in_month(_TODAY.date()))
