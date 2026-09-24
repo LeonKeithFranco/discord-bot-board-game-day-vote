@@ -7,7 +7,10 @@ from dateutil.rrule import MONTHLY, SA, WEEKLY, rrule
 
 TIMEZONE = ZoneInfo("America/Vancouver")
 RUN_TIME = time(hour=12, minute=0, tzinfo=TIMEZONE)
-_TODAY = datetime.now(tz=TIMEZONE)
+
+
+def get_today() -> datetime:
+    return datetime.now(tz=TIMEZONE)
 
 
 class DateCalculator:
@@ -24,7 +27,7 @@ class DateCalculator:
         self.select_next_target_saturday()
 
     def _generate_saturdays(self) -> list[datetime]:
-        return list(rrule(MONTHLY, byweekday=SA(1), dtstart=_TODAY, count=12))
+        return list(rrule(MONTHLY, byweekday=SA(1), dtstart=get_today(), count=12))
 
     def _get_next_target_saturday(self) -> date:
         if not self._next_saturdays:
@@ -52,7 +55,7 @@ def get_valid_statutory_holidays_in_month(d: date) -> list[date]:
     If holiday dates land a Friday, it is returned. If it lands on a Monday, the Sunday
     previous is returned instead. Any other days are discarded.
     """
-    bc_holidays = holidays.Canada(subdiv="BC", years=_TODAY.year)
+    bc_holidays = holidays.Canada(subdiv="BC", years=get_today().year)
 
     valid_holidays_this_month: list[date] = []
 
@@ -73,5 +76,6 @@ if __name__ == "__main__":
     date_calc = DateCalculator()
     print(date_calc._next_saturdays)
     print(date_calc.target_saturday)
-    print(get_all_saturdays_in_month(_TODAY.date()))
-    print(get_valid_statutory_holidays_in_month(_TODAY.date()))
+    today = get_today()
+    print(get_all_saturdays_in_month(today.date()))
+    print(get_valid_statutory_holidays_in_month(today.date()))
