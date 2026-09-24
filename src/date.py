@@ -1,7 +1,10 @@
-from datetime import datetime
+from datetime import datetime, time
+from zoneinfo import ZoneInfo
 
 from dateutil.rrule import MONTHLY, SA, rrule
 from dateutil.utils import today
+
+RUN_TIME = time(hour=12, minute=0, tzinfo=ZoneInfo("America/Vancouver"))
 
 
 class DateCalculator:
