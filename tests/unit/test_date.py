@@ -7,6 +7,7 @@ from src.date import (
     TIMEZONE,
     DateCalculator,
     get_all_saturdays_in_month,
+    get_target_poll_date,
     get_valid_statutory_holidays_in_month,
 )
 
@@ -128,3 +129,7 @@ def test_get_valid_statutory_holidays_in_month() -> None:
     holidays = get_valid_statutory_holidays_in_month(d=date(2026, 11, 1))
 
     assert len(holidays) == 0
+
+
+def test_get_target_poll_date() -> None:
+    assert get_target_poll_date(d=date(2026, 12, 5)) == date(2026, 11, 23)

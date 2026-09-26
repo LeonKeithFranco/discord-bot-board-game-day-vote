@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 from dateutil.rrule import MONTHLY, SA, WEEKLY, rrule
 
 TIMEZONE = ZoneInfo("America/Vancouver")
+# the monday of the previous week of the first saturday of the month
+N_DAYS_BEFORE_FIRST_SATURDAY_FOR_POLL = relativedelta(days=-12)
 RUN_TIME = time(hour=12, minute=0, tzinfo=TIMEZONE)
 
 
@@ -70,6 +72,10 @@ def get_valid_statutory_holidays_in_month(d: date) -> list[date]:
                 valid_holidays_this_month.append(day)
 
     return valid_holidays_this_month
+
+
+def get_target_poll_date(d: date) -> date:
+    return d + N_DAYS_BEFORE_FIRST_SATURDAY_FOR_POLL
 
 
 if __name__ == "__main__":
