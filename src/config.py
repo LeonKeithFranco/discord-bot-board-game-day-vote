@@ -15,6 +15,9 @@ class _Settings(BaseSettings):
     )
 
     TOKEN: str = Field(min_length=1)
+    SERVER_NAME: str = Field(min_length=1)
+    CHANNEL_NAME: str = Field(min_length=1)
+    THREAD_NAME: str = Field(min_length=1)
 
 
 settings = _Settings()
