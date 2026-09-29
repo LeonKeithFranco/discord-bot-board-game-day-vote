@@ -1,4 +1,5 @@
 import asyncio
+import signal
 
 import discord
 from discord.ext import commands, tasks
@@ -49,6 +50,12 @@ async def before():
 
 
 async def main():
+    loop = asyncio.get_running_loop()
+    loop.add_signal_handler(
+        signal.SIGTERM,
+        lambda: asyncio.create_task(bot.close()),
+    )
+
     async with bot:
         schedule_poll.start()
         await bot.start(settings.TOKEN)
