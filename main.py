@@ -51,14 +51,18 @@ async def before():
 
 async def main():
     loop = asyncio.get_running_loop()
-    loop.add_signal_handler(
-        signal.SIGTERM,
-        lambda: asyncio.create_task(bot.close()),
-    )
+    shutdown_task = asyncio.create_task(bot.close())
+
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        loop.add_signal_handler(
+            sig,
+            lambda: shutdown_task,
+        )
 
     async with bot:
         schedule_poll.start()
         await bot.start(settings.TOKEN)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
