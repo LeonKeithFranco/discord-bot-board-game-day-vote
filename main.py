@@ -1,11 +1,17 @@
 import asyncio
+import datetime
 import signal
 
 import discord
 from discord.ext import commands, tasks
 
 from src.config import settings
-from src.date import get_today
+from src.date import (
+    date_calc,
+    get_all_saturdays_in_month,
+    get_target_poll_date,
+    get_today,
+)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -24,7 +30,7 @@ async def ping(ctx: commands.Context) -> None:
 
 
 # @tasks.loop(time=RUN_TIME)
-@tasks.loop(minutes=5)
+@tasks.loop(hours=24)
 async def schedule_poll():
     guild = discord.utils.get(bot.guilds, name=settings.SERVER_NAME)
     if guild is None:
@@ -41,7 +47,25 @@ async def schedule_poll():
         print(f"Thread {settings.THREAD_NAME} does not exist")
         return
 
+    role = discord.utils.get(guild.roles, name=settings.ROLE_NAME)
+    if role is None:
+        print(f"Thread {settings.ROLE_NAME} does not exist")
+        return
+
     await thread.send(f"test message timestamp: {get_today().isoformat()}")
+
+    # if get_target_poll_date(date_calc.target_saturday) != date_calc.target_saturday:
+    #     return
+
+    saturdays = get_all_saturdays_in_month(date_calc.target_saturday)
+
+    poll = discord.Poll(
+        question="Board games?!", duration=datetime.timedelta(hours=24), multiple=True
+    )
+    for sat in saturdays:
+        poll.add_answer(text=sat.strftime("%b %d"))
+
+    await thread.send(content=f"{role.mention}", poll=poll)
 
 
 @schedule_poll.before_loop
@@ -51,14 +75,18 @@ async def before():
 
 async def main():
     loop = asyncio.get_running_loop()
-    loop.add_signal_handler(
-        signal.SIGTERM,
-        lambda: asyncio.create_task(bot.close()),
-    )
+    shutdown_task = asyncio.create_task(bot.close())
+
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        loop.add_signal_handler(
+            sig,
+            lambda: shutdown_task,
+        )
 
     async with bot:
         schedule_poll.start()
         await bot.start(settings.TOKEN)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

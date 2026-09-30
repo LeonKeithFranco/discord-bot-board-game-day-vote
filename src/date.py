@@ -78,6 +78,9 @@ def get_target_poll_date(d: date) -> date:
     return d + N_DAYS_BEFORE_FIRST_SATURDAY_FOR_POLL
 
 
+date_calc = DateCalculator()
+
+
 if __name__ == "__main__":
     date_calc = DateCalculator()
     print(date_calc._next_saturdays)
