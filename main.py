@@ -47,13 +47,12 @@ async def schedule_poll():
         print(f"Thread {settings.THREAD_NAME} does not exist")
         return
 
-    await thread.send(f"test message timestamp: {get_today().isoformat()}")
     role = discord.utils.get(guild.roles, name=settings.ROLE_NAME)
     if role is None:
         print(f"Thread {settings.ROLE_NAME} does not exist")
         return
 
-    await thread.send(f"test: {get_today().isoformat()}")
+    await thread.send(f"test message timestamp: {get_today().isoformat()}")
 
     # if get_target_poll_date(date_calc.target_saturday) != date_calc.target_saturday:
     #     return
