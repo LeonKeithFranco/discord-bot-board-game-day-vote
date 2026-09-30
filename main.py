@@ -7,6 +7,7 @@ from discord.ext import commands, tasks
 
 from src.config import settings
 from src.date import (
+    RUN_TIME,
     date_calc,
     get_all_saturdays_in_month,
     get_target_poll_date,
@@ -29,8 +30,7 @@ async def ping(ctx: commands.Context) -> None:
     await ctx.send("pong")
 
 
-# @tasks.loop(time=RUN_TIME)
-@tasks.loop(hours=24)
+@tasks.loop(time=RUN_TIME)
 async def schedule_poll():
     guild = discord.utils.get(bot.guilds, name=settings.SERVER_NAME)
     if guild is None:
