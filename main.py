@@ -1,11 +1,17 @@
 import asyncio
+import datetime
 import signal
 
 import discord
 from discord.ext import commands, tasks
 
 from src.config import settings
-from src.date import get_today
+from src.date import (
+    date_calc,
+    get_all_saturdays_in_month,
+    get_target_poll_date,
+    get_today,
+)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -24,7 +30,7 @@ async def ping(ctx: commands.Context) -> None:
 
 
 # @tasks.loop(time=RUN_TIME)
-@tasks.loop(minutes=5)
+@tasks.loop(hours=24)
 async def schedule_poll():
     guild = discord.utils.get(bot.guilds, name=settings.SERVER_NAME)
     if guild is None:
@@ -42,6 +48,25 @@ async def schedule_poll():
         return
 
     await thread.send(f"test message timestamp: {get_today().isoformat()}")
+    role = discord.utils.get(guild.roles, name=settings.ROLE_NAME)
+    if role is None:
+        print(f"Thread {settings.ROLE_NAME} does not exist")
+        return
+
+    await thread.send(f"test: {get_today().isoformat()}")
+
+    # if get_target_poll_date(date_calc.target_saturday) != date_calc.target_saturday:
+    #     return
+
+    saturdays = get_all_saturdays_in_month(date_calc.target_saturday)
+
+    poll = discord.Poll(
+        question="Board games?!", duration=datetime.timedelta(hours=24), multiple=True
+    )
+    for sat in saturdays:
+        poll.add_answer(text=sat.strftime("%b %d"))
+
+    await thread.send(content=f"{role.mention}", poll=poll)
 
 
 @schedule_poll.before_loop

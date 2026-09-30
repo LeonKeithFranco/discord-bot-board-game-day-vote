@@ -18,6 +18,7 @@ class _Settings(BaseSettings):
     SERVER_NAME: str = Field(min_length=1)
     CHANNEL_NAME: str = Field(min_length=1)
     THREAD_NAME: str = Field(min_length=1)
+    ROLE_NAME: str = Field(min_length=1)
 
 
 settings = _Settings()
