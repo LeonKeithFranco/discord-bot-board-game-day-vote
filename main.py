@@ -49,7 +49,7 @@ async def schedule_poll():
 
     role = discord.utils.get(guild.roles, name=settings.ROLE_NAME)
     if role is None:
-        print(f"Thread {settings.ROLE_NAME} does not exist")
+        print(f"Role {settings.ROLE_NAME} does not exist")
         return
 
     await thread.send(f"test message timestamp: {get_today().isoformat()}")
@@ -75,12 +75,11 @@ async def before():
 
 async def main():
     loop = asyncio.get_running_loop()
-    shutdown_task = asyncio.create_task(bot.close())
 
     for sig in (signal.SIGTERM, signal.SIGINT):
         loop.add_signal_handler(
             sig,
-            lambda: shutdown_task,
+            lambda: asyncio.create_task(bot.close()),
         )
 
     async with bot:
