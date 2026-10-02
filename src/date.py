@@ -41,6 +41,19 @@ class DateCalculator:
         self.target_saturday = self._get_next_target_saturday()
 
 
+date_calc = DateCalculator()
+
+
+def advance_date_calc_to_valid_state() -> None:
+    is_poll_day_or_greater = get_today().date() >= get_target_poll_date(
+        date_calc.target_saturday
+    )
+    is_past_target_time = get_today().time() > RUN_TIME
+
+    if is_poll_day_or_greater and is_past_target_time:
+        date_calc.select_next_target_saturday()
+
+
 def get_all_saturdays_in_month(d: date) -> list[date]:
     first_day = d.replace(day=1)
     last_day = d + relativedelta(day=31)
@@ -84,9 +97,6 @@ def get_all_valid_days_in_month(d: date) -> list[date]:
 
 def get_target_poll_date(d: date) -> date:
     return d + N_DAYS_BEFORE_FIRST_SATURDAY_FOR_POLL
-
-
-date_calc = DateCalculator()
 
 
 if __name__ == "__main__":
