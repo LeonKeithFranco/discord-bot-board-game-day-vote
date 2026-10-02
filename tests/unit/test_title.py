@@ -1,7 +1,3 @@
-import datetime
-
-import pytest
-
 from src.date import get_today
 from src.title import (
     _TEMPLATE_TOKEN,
