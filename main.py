@@ -9,7 +9,6 @@ from src.config import settings
 from src.date import (
     RUN_TIME,
     date_calc,
-    get_all_saturdays_in_month,
     get_all_valid_days_in_month,
     get_target_poll_date,
     get_today,
@@ -55,16 +54,18 @@ async def schedule_poll():
 
     await thread.send(f"test message timestamp: {get_today().isoformat()}")
 
-    # if get_target_poll_date(date_calc.target_saturday) != date_calc.target_saturday:
-    #     return
+    if get_target_poll_date(date_calc.target_saturday) != date_calc.target_saturday:
+        return
 
-    saturdays = get_all_valid_days_in_month(date_calc.target_saturday)
+    valid_days = get_all_valid_days_in_month(date_calc.target_saturday)
 
     poll = discord.Poll(
-        question="Board games?!", duration=datetime.timedelta(hours=24), multiple=True
+        question="Board games?!",
+        duration=datetime.timedelta(weeks=1),
+        multiple=True,
     )
-    for sat in saturdays:
-        poll.add_answer(text=sat.strftime("%b %d"))
+    for day in valid_days:
+        poll.add_answer(text=day.strftime("%b %d"))
 
     await thread.send(content=f"{role.mention}", poll=poll)
 
