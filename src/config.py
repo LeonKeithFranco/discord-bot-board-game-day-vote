@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -19,6 +20,7 @@ class _Settings(BaseSettings):
     CHANNEL_NAME: str = Field(min_length=1)
     THREAD_NAME: str = Field(min_length=1)
     ROLE_NAME: str = Field(min_length=1)
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
 
 settings = _Settings()

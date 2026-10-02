@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import logging
 import signal
 
 import discord
@@ -13,7 +14,10 @@ from src.date import (
     get_target_poll_date,
     get_today,
 )
+from src.log import setup_logging
 from src.title import get_random_game_poll_title_with_month
+
+logger = logging.getLogger(__name__)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -35,28 +39,30 @@ async def ping(ctx: commands.Context) -> None:
 async def schedule_poll():
     guild = discord.utils.get(bot.guilds, name=settings.SERVER_NAME)
     if guild is None:
-        print(f"Server {settings.SERVER_NAME} does not exist")
+        logger.warning("Server %s does not exist", settings.SERVER_NAME)
         return
 
     channel = discord.utils.get(guild.text_channels, name=settings.CHANNEL_NAME)
     if channel is None:
-        print(f"Channel {settings.CHANNEL_NAME} does not exist")
+        logger.warning("Channel %s does not exist", settings.CHANNEL_NAME)
         return
 
     thread = discord.utils.get(channel.threads, name=settings.THREAD_NAME)
     if thread is None:
-        print(f"Thread {settings.THREAD_NAME} does not exist")
+        logger.warning("Thread %s does not exist", settings.THREAD_NAME)
         return
 
     role = discord.utils.get(guild.roles, name=settings.ROLE_NAME)
     if role is None:
-        print(f"Role {settings.ROLE_NAME} does not exist")
+        logger.warning("Role %s does not exist", settings.ROLE_NAME)
         return
 
-    await thread.send(f"test message timestamp: {get_today().isoformat()}")
+    logger.info("Date: %s", get_today().isoformat())
 
     if get_target_poll_date(date_calc.target_saturday) != date_calc.target_saturday:
         return
+
+    logger.info("Setting up poll")
 
     valid_days = get_all_valid_days_in_month(date_calc.target_saturday)
 
@@ -68,6 +74,8 @@ async def schedule_poll():
     for day in valid_days:
         poll.add_answer(text=day.strftime("%b %d"))
 
+    logger.info("Sent poll")
+
     await thread.send(content=f"{role.mention}", poll=poll)
 
 
@@ -77,8 +85,9 @@ async def before():
 
 
 async def main():
-    loop = asyncio.get_running_loop()
+    setup_logging()
 
+    loop = asyncio.get_running_loop()
     for sig in (signal.SIGTERM, signal.SIGINT):
         loop.add_signal_handler(
             sig,
@@ -91,4 +100,6 @@ async def main():
 
 
 if __name__ == "__main__":
+    logger.info("Starting bot")
     asyncio.run(main())
+    logger.info("Shutting down bot")
