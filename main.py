@@ -9,6 +9,7 @@ from discord.ext import commands, tasks
 from src.config import settings
 from src.date import (
     RUN_TIME,
+    advance_date_calc_to_valid_state,
     date_calc,
     get_all_valid_days_in_month,
     get_target_poll_date,
@@ -87,8 +88,9 @@ async def before():
 
 
 async def main():
-    loop = asyncio.get_running_loop()
+    advance_date_calc_to_valid_state()
 
+    loop = asyncio.get_running_loop()
     for sig in (signal.SIGTERM, signal.SIGINT):
         loop.add_signal_handler(
             sig,
