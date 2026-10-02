@@ -13,6 +13,7 @@ from src.date import (
     get_target_poll_date,
     get_today,
 )
+from src.title import get_random_game_poll_title_with_month
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -60,7 +61,7 @@ async def schedule_poll():
     valid_days = get_all_valid_days_in_month(date_calc.target_saturday)
 
     poll = discord.Poll(
-        question="Board games?!",
+        question=get_random_game_poll_title_with_month(date_calc.target_saturday),
         duration=datetime.timedelta(weeks=1),
         multiple=True,
     )
