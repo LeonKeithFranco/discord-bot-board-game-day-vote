@@ -10,6 +10,7 @@ from src.date import (
     RUN_TIME,
     date_calc,
     get_all_saturdays_in_month,
+    get_all_valid_days_in_month,
     get_target_poll_date,
     get_today,
 )
@@ -57,7 +58,7 @@ async def schedule_poll():
     # if get_target_poll_date(date_calc.target_saturday) != date_calc.target_saturday:
     #     return
 
-    saturdays = get_all_saturdays_in_month(date_calc.target_saturday)
+    saturdays = get_all_valid_days_in_month(date_calc.target_saturday)
 
     poll = discord.Poll(
         question="Board games?!", duration=datetime.timedelta(hours=24), multiple=True

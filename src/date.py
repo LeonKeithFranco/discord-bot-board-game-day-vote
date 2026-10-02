@@ -74,6 +74,14 @@ def get_valid_statutory_holidays_in_month(d: date) -> list[date]:
     return valid_holidays_this_month
 
 
+def get_all_valid_days_in_month(d: date) -> list[date]:
+    valid_days = get_all_saturdays_in_month(d) + get_valid_statutory_holidays_in_month(
+        d
+    )
+
+    return sorted(valid_days)
+
+
 def get_target_poll_date(d: date) -> date:
     return d + N_DAYS_BEFORE_FIRST_SATURDAY_FOR_POLL
 
