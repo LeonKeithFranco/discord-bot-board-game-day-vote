@@ -9,7 +9,7 @@ LOG_PATH = Path(__file__).resolve().parent.parent / "logs" / "app.log"
 
 
 def setup_logging() -> None:
-    LOG_PATH.mkdir(parents=True, exist_ok=True)
+    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     logging.basicConfig(
         level=settings.LOG_LEVEL,

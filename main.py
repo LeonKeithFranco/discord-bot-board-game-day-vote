@@ -27,7 +27,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready() -> None:
-    print(f"Logged in as {bot.user}")
+    logger.info("Logged in as %s", bot.user)
 
 
 @bot.command()
@@ -59,7 +59,7 @@ async def schedule_poll():
 
     logger.info("Date: %s", get_today().isoformat())
 
-    if get_target_poll_date(date_calc.target_saturday) != date_calc.target_saturday:
+    if get_today().date() != get_target_poll_date(date_calc.target_saturday):
         return
 
     logger.info("Setting up poll")
@@ -85,9 +85,8 @@ async def before():
 
 
 async def main():
-    setup_logging()
-
     loop = asyncio.get_running_loop()
+
     for sig in (signal.SIGTERM, signal.SIGINT):
         loop.add_signal_handler(
             sig,
@@ -100,6 +99,7 @@ async def main():
 
 
 if __name__ == "__main__":
+    setup_logging()
     logger.info("Starting bot")
     asyncio.run(main())
     logger.info("Shutting down bot")
