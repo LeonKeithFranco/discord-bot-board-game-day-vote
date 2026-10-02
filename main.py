@@ -58,7 +58,8 @@ async def schedule_poll():
         logger.warning("Role %s does not exist", settings.ROLE_NAME)
         return
 
-    logger.info("Date: %s", get_today().isoformat())
+    logger.info("Date: %s", get_today().date().isoformat())
+    logger.info("Target date: %s", date_calc.target_saturday.isoformat())
 
     if get_today().date() != get_target_poll_date(date_calc.target_saturday):
         return
@@ -67,6 +68,8 @@ async def schedule_poll():
 
     valid_days = get_all_valid_days_in_month(date_calc.target_saturday)
 
+    logger.info("Valid days: %s", valid_days)
+
     poll = discord.Poll(
         question=get_random_game_poll_title_with_month(date_calc.target_saturday),
         duration=datetime.timedelta(weeks=1),
@@ -74,6 +77,8 @@ async def schedule_poll():
     )
     for day in valid_days:
         poll.add_answer(text=day.strftime("%b %d"))
+
+    logger.info("Poll: %s", poll)
 
     await thread.send(content=f"{role.mention}", poll=poll)
 
