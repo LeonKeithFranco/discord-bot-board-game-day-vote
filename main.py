@@ -74,9 +74,11 @@ async def schedule_poll():
     for day in valid_days:
         poll.add_answer(text=day.strftime("%b %d"))
 
+    await thread.send(content=f"{role.mention}", poll=poll)
+
     logger.info("Sent poll")
 
-    await thread.send(content=f"{role.mention}", poll=poll)
+    date_calc.select_next_target_saturday()
 
 
 @schedule_poll.before_loop
