@@ -92,7 +92,6 @@ class TestDateCalculator:
                 date_calc.select_next_target_saturday()
             advance_mock_get_today()
 
-        # same dates because mocked get_today will always return the same date
         first_expected_saturday = date(2027, 1, 2)
         other_expected_first_saturdays = {
             date(2027, 2, 6),
