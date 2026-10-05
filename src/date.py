@@ -47,12 +47,14 @@ date_calc = DateCalculator()
 
 
 def advance_date_calc_to_valid_state() -> None:
-    is_poll_day_or_greater = get_today().date() >= get_target_poll_date(
+    is_after_poll_day = get_today().date() > get_target_poll_date(
         date_calc.target_saturday
     )
-    is_past_target_time = get_today().time() > RUN_TIME
+    is_poll_day_and_past_target_time = (
+        get_today().date() == get_target_poll_date(date_calc.target_saturday)
+    ) and (get_today().time() > RUN_TIME)
 
-    if is_poll_day_or_greater and is_past_target_time:
+    if is_after_poll_day or is_poll_day_and_past_target_time:
         date_calc.select_next_target_saturday()
 
 
