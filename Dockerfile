@@ -18,6 +18,7 @@ WORKDIR /app
 
 COPY main.py .
 COPY src ./src
+COPY board_game_poll_titles.txt .
 
 
 # runtime
