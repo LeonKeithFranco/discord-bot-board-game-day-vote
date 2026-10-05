@@ -25,15 +25,17 @@ class DateCalculator:
     target_saturday: date
 
     def __init__(self) -> None:
-        self._next_saturdays = self._generate_saturdays()
+        self._next_saturdays = self._generate_saturdays(get_today().date())
         self.select_next_target_saturday()
 
-    def _generate_saturdays(self) -> list[datetime]:
-        return list(rrule(MONTHLY, byweekday=SA(1), dtstart=get_today(), count=12))
+    def _generate_saturdays(self, start: date) -> list[datetime]:
+        return list(rrule(MONTHLY, byweekday=SA(1), dtstart=start, count=12))
 
     def _get_next_target_saturday(self) -> date:
         if not self._next_saturdays:
-            self._next_saturdays = self._generate_saturdays()
+            self._next_saturdays = self._generate_saturdays(
+                self.target_saturday + relativedelta(days=1)
+            )
 
         return self._next_saturdays.pop(0).date()
 

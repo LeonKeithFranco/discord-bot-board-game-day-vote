@@ -1,8 +1,10 @@
-from datetime import date, datetime
+from collections.abc import Callable
+from datetime import date, datetime, timedelta
 
 import pytest
 from pytest_mock import MockerFixture
 
+import src.date
 from src.date import (
     TIMEZONE,
     DateCalculator,
@@ -17,6 +19,18 @@ def mock_get_today(mocker: MockerFixture) -> None:
     mocker.patch(
         "src.date.get_today", return_value=datetime(2026, 1, 1, tzinfo=TIMEZONE)
     )
+
+
+@pytest.fixture
+def advance_mock_get_today(mocker: MockerFixture) -> Callable[..., None]:
+    mock = mocker.patch(
+        "src.date.get_today", return_value=datetime(2026, 1, 1, tzinfo=TIMEZONE)
+    )
+
+    def advance_a_day() -> None:
+        mock.return_value += timedelta(days=1)
+
+    return advance_a_day
 
 
 class TestDateCalculator:
@@ -68,33 +82,35 @@ class TestDateCalculator:
             # 10 because select_next_taret_saturday has already been called once
             assert len(date_calc._next_saturdays) == 10 - i
 
-    def test_get_new_set_of_first_saturdays(self) -> None:
+    def test_get_new_set_of_first_saturdays(
+        self, advance_mock_get_today: Callable[..., None]
+    ) -> None:
         date_calc = DateCalculator()
 
-        for _ in range(12):
-            date_calc.select_next_target_saturday()
+        for _ in range(366):
+            if src.date.get_today().date() == date_calc.target_saturday:
+                date_calc.select_next_target_saturday()
+            advance_mock_get_today()
 
         # same dates because mocked get_today will always return the same date
-        first_expected_saturday = date(2026, 1, 3)
+        first_expected_saturday = date(2027, 1, 2)
         other_expected_first_saturdays = {
-            date(2026, 2, 7),
-            date(2026, 3, 7),
-            date(2026, 4, 4),
-            date(2026, 5, 2),
-            date(2026, 6, 6),
-            date(2026, 7, 4),
-            date(2026, 8, 1),
-            date(2026, 9, 5),
-            date(2026, 10, 3),
-            date(2026, 11, 7),
-            date(2026, 12, 5),
+            date(2027, 2, 6),
+            date(2027, 3, 6),
+            date(2027, 4, 3),
+            date(2027, 5, 1),
+            date(2027, 6, 5),
+            date(2027, 7, 3),
+            date(2027, 8, 7),
+            date(2027, 9, 4),
+            date(2027, 10, 2),
+            date(2027, 11, 6),
+            date(2027, 12, 4),
         }
 
-        date_calc = DateCalculator()
-
         assert date_calc.target_saturday == first_expected_saturday
-        assert len(date_calc._next_saturdays) == 11
 
+        assert len(date_calc._next_saturdays) == 11
         for d in date_calc._next_saturdays:
             assert d.date() in other_expected_first_saturdays
 
