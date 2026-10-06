@@ -74,7 +74,7 @@ def get_valid_statutory_holidays_in_month(d: date) -> list[date]:
     If holiday dates land a Friday, it is returned. If it lands on a Monday, the Sunday
     previous is returned instead. Any other days are discarded.
     """
-    bc_holidays = holidays.Canada(subdiv="BC", years=get_today().year)
+    bc_holidays = holidays.Canada(subdiv="BC", years=d.year)
 
     valid_holidays_this_month: list[date] = []
 
