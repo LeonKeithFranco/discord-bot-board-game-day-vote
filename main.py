@@ -103,7 +103,7 @@ async def main():
 
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGTERM, signal.SIGINT):
-        loop.add_signal_handler(sig, request_shutdown)
+        loop.add_signal_handler(sig, request_shutdown, bot)
 
     async with bot:
         schedule_poll.start()
