@@ -79,7 +79,7 @@ class TestDateCalculator:
             date_calc.select_next_target_saturday()
 
             assert date_calc.target_saturday == d
-            # 10 because select_next_taret_saturday has already been called once
+            # 10 because select_next_target_saturday has already been called once
             assert len(date_calc._next_saturdays) == 10 - i
 
     def test_get_new_set_of_first_saturdays(
