@@ -22,7 +22,10 @@ def _get_random_board_game_poll_title() -> Iterator[BoardGameTitle]:
         yield from titles
 
 
+_titles = _get_random_board_game_poll_title()
+
+
 def get_random_game_poll_title_with_month(d: date) -> str:
-    title = next(_get_random_board_game_poll_title())
+    title = next(_titles)
 
     return title.replace(_TEMPLATE_TOKEN, d.strftime("%B"))
