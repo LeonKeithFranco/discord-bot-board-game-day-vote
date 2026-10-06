@@ -66,6 +66,9 @@ async def schedule_poll():
     logger.info("Date: %s", get_today().date().isoformat())
     logger.info("Target date: %s", date_calc.target_saturday.isoformat())
 
+    # DELETE after final test
+    await thread.send(content=f"today: {get_today().isoformat()}")
+
     if get_today().date() != get_target_poll_date(date_calc.target_saturday):
         logger.info("Skip sending poll today")
         return
