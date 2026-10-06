@@ -50,6 +50,10 @@ async def schedule_poll():
 
     thread = discord.utils.get(channel.threads, name=settings.THREAD_NAME)
     if thread is None:
+        thread = await discord.utils.get(
+            channel.archived_threads(), name=settings.THREAD_NAME
+        )
+    if thread is None:
         logger.warning("Thread %s does not exist", settings.THREAD_NAME)
         return
 
