@@ -11,7 +11,7 @@ type BoardGameTitle = str
 
 def _get_board_game_poll_titles() -> list[BoardGameTitle]:
     with open(_FILE_PATH, "r", encoding="utf-8") as f:
-        return f.readlines()
+        return [line.strip() for line in f if not line.isspace()]
 
 
 def _get_random_board_game_poll_title() -> Iterator[BoardGameTitle]:
@@ -22,7 +22,10 @@ def _get_random_board_game_poll_title() -> Iterator[BoardGameTitle]:
         yield from titles
 
 
+_titles = _get_random_board_game_poll_title()
+
+
 def get_random_game_poll_title_with_month(d: date) -> str:
-    title = next(_get_random_board_game_poll_title())
+    title = next(_titles)
 
     return title.replace(_TEMPLATE_TOKEN, d.strftime("%B"))

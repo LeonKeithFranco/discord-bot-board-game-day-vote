@@ -16,6 +16,7 @@ from src.date import (
     get_today,
 )
 from src.log import setup_logging
+from src.signal_handlers import request_shutdown
 from src.title import get_random_game_poll_title_with_month
 
 logger = logging.getLogger(__name__)
@@ -50,6 +51,10 @@ async def schedule_poll():
 
     thread = discord.utils.get(channel.threads, name=settings.THREAD_NAME)
     if thread is None:
+        thread = await discord.utils.get(
+            channel.archived_threads(), name=settings.THREAD_NAME
+        )
+    if thread is None:
         logger.warning("Thread %s does not exist", settings.THREAD_NAME)
         return
 
@@ -60,6 +65,9 @@ async def schedule_poll():
 
     logger.info("Date: %s", get_today().date().isoformat())
     logger.info("Target date: %s", date_calc.target_saturday.isoformat())
+
+    # DELETE after final test
+    await thread.send(content=f"today: {get_today().isoformat()}")
 
     if get_today().date() != get_target_poll_date(date_calc.target_saturday):
         logger.info("Skip sending poll today")
@@ -98,10 +106,7 @@ async def main():
 
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGTERM, signal.SIGINT):
-        loop.add_signal_handler(
-            sig,
-            lambda: asyncio.create_task(bot.close()),
-        )
+        loop.add_signal_handler(sig, request_shutdown, bot)
 
     async with bot:
         schedule_poll.start()
