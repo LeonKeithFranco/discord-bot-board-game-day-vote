@@ -127,23 +127,53 @@ def test_get_all_saturdays_in_month() -> None:
         assert d in all_expected_saturdays
 
 
-def test_get_valid_statutory_holidays_in_month() -> None:
-    # April should return good friday
-    holidays = get_valid_statutory_holidays_in_month(d=date(2026, 4, 1))
+@pytest.mark.parametrize(
+    ("d", "expected"),
+    [
+        # Good Friday lands on a Friday
+        (date(2026, 4, 1), [date(2026, 4, 3)]),
+        # Labour Day (Mon Sep 7) gives the Sunday before it
+        (date(2026, 9, 1), [date(2026, 9, 6)]),
+        # Remembrance Day lands on a Wednesday, so nothing
+        (date(2026, 11, 1), []),
+        # Christmas lands on a Friday; New Year's Day 2027 is a Friday, so no Dec 31
+        (date(2026, 12, 5), [date(2026, 12, 25)]),
+        # Canada Day 2026 is a Wednesday, so no Jun 30
+        (date(2026, 6, 6), []),
+        # Labour Day 2025 is Mon Sep 1, so its Sunday (Aug 31) goes in August's poll
+        (date(2025, 8, 2), [date(2025, 8, 3), date(2025, 8, 31)]),
+        # ...and not in September's, even though the holiday is in September
+        (date(2025, 9, 6), []),
+        # Christmas 2028 is a Monday and New Year's Day 2029 is a Monday
+        (date(2028, 12, 2), [date(2028, 12, 24), date(2028, 12, 31)]),
+    ],
+    ids=[
+        "friday-holiday",
+        "monday-holiday",
+        "midweek-holiday",
+        "no-eom-when-next-1st-is-friday",
+        "no-eom-when-next-1st-is-midweek",
+        "eom-when-next-1st-is-monday",
+        "sunday-in-previous-month-skipped",
+        "monday-holiday-and-eom",
+    ],
+)
+def test_get_valid_statutory_holidays_in_month(d: date, expected: list[date]) -> None:
+    assert sorted(get_valid_statutory_holidays_in_month(d=d)) == expected
 
-    assert len(holidays) == 1
-    assert holidays[0] == date(2026, 4, 3)
 
-    # September should return the sunday before labour day
-    holidays = get_valid_statutory_holidays_in_month(d=date(2026, 9, 1))
+def test_get_valid_statutory_holidays_in_month_uses_target_year(
+    mocker: MockerFixture,
+) -> None:
+    # January's poll is sent in December, so "today" is in the previous year
+    mocker.patch(
+        "src.date.get_today", return_value=datetime(2026, 12, 21, tzinfo=TIMEZONE)
+    )
 
-    assert len(holidays) == 1
-    assert holidays[0] == date(2026, 9, 6)
-
-    # November should return nothing
-    holidays = get_valid_statutory_holidays_in_month(d=date(2026, 11, 1))
-
-    assert len(holidays) == 0
+    # New Year's Day 2027 is a Friday
+    assert get_valid_statutory_holidays_in_month(d=date(2027, 1, 2)) == [
+        date(2027, 1, 1)
+    ]
 
 
 def test_get_target_poll_date() -> None:

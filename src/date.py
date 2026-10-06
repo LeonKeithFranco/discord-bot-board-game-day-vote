@@ -69,10 +69,12 @@ def get_all_saturdays_in_month(d: date) -> list[date]:
 
 
 def get_valid_statutory_holidays_in_month(d: date) -> list[date]:
-    """Returns the dates that are valid relative to staturoy holiday dates.
+    """Returns the days around BC statutory holidays that can be voted on in d's month.
 
-    If holiday dates land a Friday, it is returned. If it lands on a Monday, the Sunday
-    previous is returned instead. Any other days are discarded.
+    A holiday on a Friday is returned as is. A holiday on a Monday returns the Sunday
+    before it instead, as long as that Sunday is in d's month. If the 1st of the next
+    month is a Monday holiday, the last day of d's month is also returned. Holidays on
+    any other day are ignored. d can be any date in the month.
     """
     bc_holidays = holidays.Canada(subdiv="BC", years=d.year)
 
@@ -87,6 +89,18 @@ def get_valid_statutory_holidays_in_month(d: date) -> list[date]:
                 valid_holidays_this_month.append(day - relativedelta(days=1))
             case 5:
                 valid_holidays_this_month.append(day)
+
+    # if monday is the first of the month, the sunday of the previous month will be added
+    # and then need to be filtered out
+    valid_holidays_this_month = [
+        day for day in valid_holidays_this_month if day.month == d.month
+    ]
+
+    # if the start of the next month is a monday, the sunday before should be added
+    eom = d + relativedelta(day=31)
+    day_after_eom = eom + relativedelta(days=1)
+    if day_after_eom in bc_holidays and day_after_eom.isoweekday() == 1:
+        valid_holidays_this_month.append(eom)
 
     return valid_holidays_this_month
 
