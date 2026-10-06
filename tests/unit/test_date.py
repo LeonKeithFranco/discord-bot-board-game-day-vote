@@ -115,16 +115,17 @@ class TestDateCalculator:
 
 
 def test_get_all_saturdays_in_month() -> None:
-    all_expected_saturdays = {
+    saturdays = get_all_saturdays_in_month(d=date(2026, 1, 1))
+
+    all_expected_saturdays = [
         date(2026, 1, 3),
         date(2026, 1, 10),
         date(2026, 1, 17),
         date(2026, 1, 24),
         date(2026, 1, 31),
-    }
+    ]
 
-    for d in get_all_saturdays_in_month(d=date(2026, 1, 1)):
-        assert d in all_expected_saturdays
+    assert saturdays == all_expected_saturdays
 
 
 @pytest.mark.parametrize(
